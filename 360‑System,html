@@ -1,0 +1,5 @@
+NAME = 360
+SYSTEM = 6E
+ROLLE = Vollrotation
+FUNKTION = Rotiert alle Achsen
+DIM = ROT

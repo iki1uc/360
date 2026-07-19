@@ -2,49 +2,121 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>360 – Vollrotation · iki1uc</title>
+<title>EVO · 360° · Cube · Opta² · Opta³ · Heatmap · Respo</title>
 
 <style>
-body { background:#000; color:#0f0; font-family:monospace; padding:40px; }
-h1 { color:#0f0; letter-spacing:4px; margin-bottom:30px; }
-.block { background:#111; border:1px solid #333; padding:25px; margin-bottom:30px; border-radius:8px; }
-.title { font-size:22px; color:#6cf; margin-bottom:10px; }
-a { color:#6cf; text-decoration:none; font-weight:bold; }
-pre { background:#000; border-left:3px solid #6cf; padding:15px; margin-top:10px; white-space:pre-wrap; }
+  body { background:#000; color:#fff; font-family:Consolas; padding:20px; }
+  h1, h2 { color:#0ff; }
+  .block { background:#111; border:1px solid #333; padding:15px; margin:20px 0; }
+  pre { background:#000; border:1px solid #333; padding:12px; }
+  .cube-face { width:120px; height:120px; display:inline-block; margin:10px; }
 </style>
+
+<script>
+// ------------------------------------------------------
+// EVO ENGINE – liest verify.html
+// ------------------------------------------------------
+
+async function loadVerify(){
+  const res = await fetch("verify.html");
+  const txt = await res.text();
+  return txt;
+}
+
+// Farben aus verify bestimmen
+function getColor(status){
+  if(status.includes("GRÜN")) return "#00ff88";
+  if(status.includes("GELB")) return "#ffff33";
+  if(status.includes("ORANGE")) return "#ff9900";
+  if(status.includes("ROT")) return "#ff4444";
+  if(status.includes("TÜRKIS")) return "#00ffff";
+  if(status.includes("BLAU")) return "#3399ff";
+  return "#666";
+}
+
+// Cube erzeugen
+function buildCube(verify){
+  const faces = ["Front","Back","Left","Right","Top","Bottom"];
+  const cube = document.getElementById("cube");
+
+  faces.forEach(f => {
+    const div = document.createElement("div");
+    div.className = "cube-face";
+    div.style.background = getColor(verify);
+    div.innerHTML = f;
+    div.onclick = () => zoomDetail(f, verify);
+    cube.appendChild(div);
+  });
+}
+
+// Zoom‑Detail‑Sicht
+function zoomDetail(face, verify){
+  document.getElementById("zoom").textContent =
+    "ZOOM: " + face + "\n\n" + verify;
+}
+
+// Opta² / Opta³
+function buildOpta(verify){
+  document.getElementById("opta2").textContent = "Opta²:\n" + verify;
+  document.getElementById("opta3").textContent = "Opta³:\n" + verify;
+}
+
+// Heatmap
+function buildHeatmap(verify){
+  document.getElementById("heatmap").textContent =
+    "Heatmap:\n" + verify;
+}
+
+// Respo‑Vergleich
+function buildRespo(verify){
+  document.getElementById("respo").textContent =
+    "Respo‑Vergleich:\n" + verify;
+}
+
+// Start
+async function start(){
+  const verify = await loadVerify();
+
+  buildCube(verify);
+  buildOpta(verify);
+  buildHeatmap(verify);
+  buildRespo(verify);
+}
+</script>
 </head>
 
-<body>
+<body onload="start()">
 
-<h1>360 – Vollrotation · iki1uc</h1>
+<h1>EVO · 360° · Cube · Opta² · Opta³ · Heatmap · Respo</h1>
 
 <div class="block">
-    <div class="title">360°-System</div>
-    <p>Dieses Modul rotiert alle Achsen, Dimensionen und Module im vollständigen 360°-Raum.</p>
+  <h2>Cube‑Engine</h2>
+  <div id="cube"></div>
 </div>
 
 <div class="block">
-    <div class="title">Identität</div>
-    <p><a href="ID.html">→ 360‑Identität öffnen</a></p>
+  <h2>Zoom‑Detail‑Sicht</h2>
+  <pre id="zoom">…</pre>
 </div>
 
 <div class="block">
-    <div class="title">360°-Daten</div>
-    <pre>
-Rotation = 360°
-Achsenmatrix = 6×6
-Dimensionen = 6D
-Felder pro Achse = 64
-Ausnutzung = 100%
-    </pre>
+  <h2>Opta²</h2>
+  <pre id="opta2">…</pre>
 </div>
 
 <div class="block">
-    <div class="title">Module</div>
-    <a href="../AXI/index.html">AXI</a>
-    <a href="../6d/index.html">6d</a>
-    <a href="../ANKER/index.html">ANKER</a>
-    <a href="../API/index.html">API</a>
+  <h2>Opta³</h2>
+  <pre id="opta3">…</pre>
+</div>
+
+<div class="block">
+  <h2>Fehler‑Heatmap</h2>
+  <pre id="heatmap">…</pre>
+</div>
+
+<div class="block">
+  <h2>Respo‑Vergleich</h2>
+  <pre id="respo">…</pre>
 </div>
 
 </body>

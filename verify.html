@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>VERIFY · 360° · EVO · RESPO</title>
+
+<style>
+  body { background:#000; color:#f33; font-family:Consolas; padding:20px; }
+  h1, h2 { color:#ff6666; }
+  .block { background:#111; border:1px solid #333; padding:15px; margin:20px 0; }
+  pre { background:#000; border:1px solid #333; padding:12px; }
+</style>
+
+<script>
+// ------------------------------------------------------
+// VERIFY 360° · EVO · RESPO
+// ------------------------------------------------------
+
+// Stationen (B, H, PYDE, T)
+const STATIONS = [
+  "B.room", "h.room", "m.room", "T.room",
+  "X.room.IN", "X.room.OUT", "X.room.CORE"
+];
+
+// NC² / 6D / 12e / RAW / CSV
+const TECH = [
+  "NC²","NC² (1)","NC²octa².dual","NC²octa²□.merge",
+  "NC²□ (1).lock","NC²□ (1).sync","NC²□.lock","NC²□.sync",
+  "NC²□octa³.align",
+  "6E → 6D.tech","6D‑Baum.raw","12e allin allout.room",
+  "STATIONEN.raw",
+  "level-pyramiden-7.csv",
+  "station-geometrie-11 (3).csv",
+  "station-geometrie-11 (4).csv"
+];
+
+// 360°‑Matrix
+function matrix360(){
+  return {
+    cube: {
+      front: null,
+      back: null,
+      left: null,
+      right: null,
+      top: null,
+      bottom: null
+    },
+    opta2: {},
+    opta3: {},
+    heatmap: {},
+    respo: {},
+    evo: {}
+  };
+}
+
+// Datei‑Check
+async function checkFile(name){
+  try{
+    const res = await fetch("../" + name);
+    if(!res.ok) return { name, ok:false };
+    const txt = await res.text();
+    return { name, ok:true, content:txt };
+  }catch(e){
+    return { name, ok:false };
+  }
+}
+
+// Start
+async function start(){
+  const results = [];
+
+  for(const f of [...STATIONS, ...TECH]){
+    results.push(await checkFile(f));
+  }
+
+  const out = document.getElementById("verify");
+  results.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "block";
+    div.innerHTML = `
+      <h2>${r.name}</h2>
+      <pre>${r.ok ? "OK" : "FEHLT"}</pre>
+    `;
+    out.appendChild(div);
+  });
+
+  document.getElementById("matrix").textContent =
+    JSON.stringify(matrix360(), null, 2);
+}
+</script>
+</head>
+
+<body onload="start()">
+
+<h1>VERIFY · 360° · EVO · RESPO</h1>
+
+<div class="block">
+  <h2>Stationen & Tech‑Status</h2>
+  <div id="verify"></div>
+</div>
+
+<div class="block">
+  <h2>360°‑Matrix (Cube / Opta² / Opta³ / Heatmap / Respo / EVO)</h2>
+  <pre id="matrix">…</pre>
+</div>
+
+</body>
+</html>

@@ -2,121 +2,85 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>EVO · 360° · Cube · Opta² · Opta³ · Heatmap · Respo</title>
+<title>IKI1UC · WORLD IS OPEN · AUTO‑SYSTEM · 6E · 6D · 100 · 360</title>
 
 <style>
-  body { background:#000; color:#fff; font-family:Consolas; padding:20px; }
-  h1, h2 { color:#0ff; }
-  .block { background:#111; border:1px solid #333; padding:15px; margin:20px 0; }
-  pre { background:#000; border:1px solid #333; padding:12px; }
-  .cube-face { width:120px; height:120px; display:inline-block; margin:10px; }
+body { background:#000; color:#0f0; font-family:Consolas; padding:30px; }
+h1 { color:#6cf; }
+.block { background:#111; border:1px solid #333; padding:20px; margin:20px 0; }
+pre { background:#000; border-left:3px solid #6cf; padding:15px; white-space:pre-wrap; }
 </style>
 
-<script>
+<script type="module">
+
 // ------------------------------------------------------
-// EVO ENGINE – liest verify.html
+// AUTO‑SCANNER – findet ALLE Dateien im Repo
 // ------------------------------------------------------
 
-async function loadVerify(){
-  const res = await fetch("verify.html");
-  const txt = await res.text();
-  return txt;
+async function scanRepo(){
+    const api = "https://api.github.com/repos/iki1uc/100/contents/";
+    const res = await fetch(api);
+    const files = await res.json();
+    return files.map(f => f.name);
 }
 
-// Farben aus verify bestimmen
-function getColor(status){
-  if(status.includes("GRÜN")) return "#00ff88";
-  if(status.includes("GELB")) return "#ffff33";
-  if(status.includes("ORANGE")) return "#ff9900";
-  if(status.includes("ROT")) return "#ff4444";
-  if(status.includes("TÜRKIS")) return "#00ffff";
-  if(status.includes("BLAU")) return "#3399ff";
-  return "#666";
+// ------------------------------------------------------
+// AUTO‑LOADER – lädt jede Datei, egal welche Endung
+// ------------------------------------------------------
+
+async function loadFile(name){
+    try{
+        const res = await fetch(name);
+        if(!res.ok) return { name, ok:false };
+        const txt = await res.text();
+        return { name, ok:true, content:txt };
+    }catch(e){
+        return { name, ok:false };
+    }
 }
 
-// Cube erzeugen
-function buildCube(verify){
-  const faces = ["Front","Back","Left","Right","Top","Bottom"];
-  const cube = document.getElementById("cube");
+// ------------------------------------------------------
+// START – lädt ALLES
+// ------------------------------------------------------
 
-  faces.forEach(f => {
-    const div = document.createElement("div");
-    div.className = "cube-face";
-    div.style.background = getColor(verify);
-    div.innerHTML = f;
-    div.onclick = () => zoomDetail(f, verify);
-    cube.appendChild(div);
-  });
-}
-
-// Zoom‑Detail‑Sicht
-function zoomDetail(face, verify){
-  document.getElementById("zoom").textContent =
-    "ZOOM: " + face + "\n\n" + verify;
-}
-
-// Opta² / Opta³
-function buildOpta(verify){
-  document.getElementById("opta2").textContent = "Opta²:\n" + verify;
-  document.getElementById("opta3").textContent = "Opta³:\n" + verify;
-}
-
-// Heatmap
-function buildHeatmap(verify){
-  document.getElementById("heatmap").textContent =
-    "Heatmap:\n" + verify;
-}
-
-// Respo‑Vergleich
-function buildRespo(verify){
-  document.getElementById("respo").textContent =
-    "Respo‑Vergleich:\n" + verify;
-}
-
-// Start
 async function start(){
-  const verify = await loadVerify();
+    const out = document.getElementById("sys");
 
-  buildCube(verify);
-  buildOpta(verify);
-  buildHeatmap(verify);
-  buildRespo(verify);
+    const repoFiles = await scanRepo();
+    const loaded = [];
+
+    for(const f of repoFiles){
+        loaded.push(await loadFile(f));
+    }
+
+    out.innerText = JSON.stringify({
+        SYSTEM: "IKI1UC · WORLD IS OPEN",
+        AXES_6D: "geladen",
+        ENERGY_6E: "geladen",
+        RESPO_100: "aktiv",
+        RESPO_360: "aktiv",
+        FARB_MODE: "aktiv",
+        NATUR_MODE: "aktiv",
+        NC_SYSTEM: "aktiv",
+        EVO_SYSTEM: "aktiv",
+        OPTA_SYSTEM: "aktiv",
+        CUBE_SYSTEM: "aktiv",
+        FILES: loaded
+    }, null, 2);
 }
+
+start();
+
 </script>
 </head>
 
-<body onload="start()">
+<body>
 
-<h1>EVO · 360° · Cube · Opta² · Opta³ · Heatmap · Respo</h1>
-
-<div class="block">
-  <h2>Cube‑Engine</h2>
-  <div id="cube"></div>
-</div>
+<h1>IKI1UC · WORLD IS OPEN · AUTO‑SYSTEM</h1>
 
 <div class="block">
-  <h2>Zoom‑Detail‑Sicht</h2>
-  <pre id="zoom">…</pre>
-</div>
-
-<div class="block">
-  <h2>Opta²</h2>
-  <pre id="opta2">…</pre>
-</div>
-
-<div class="block">
-  <h2>Opta³</h2>
-  <pre id="opta3">…</pre>
-</div>
-
-<div class="block">
-  <h2>Fehler‑Heatmap</h2>
-  <pre id="heatmap">…</pre>
-</div>
-
-<div class="block">
-  <h2>Respo‑Vergleich</h2>
-  <pre id="respo">…</pre>
+    <h2>System‑Status</h2>
+    <pre id="sys">Lade…</pre>
 </div>
 
 </body>
